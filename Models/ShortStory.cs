@@ -10,16 +10,16 @@ namespace TermProject.Models
     public class ShortStory
     {
         [Required, Key, Column("ID")]
-        public string ID { get; set; }
+        public string ID { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
         [StringLength(1024, ErrorMessage = "Must enter a story less than 1024 characters.")]
-        [RegularExpression("^[^<>/\\]{1,1025}$", ErrorMessage = "No slashes or angle brackets allowed")]
+        [RegularExpression("^[^<>\\\\/]{1,1025}$", ErrorMessage = "No slashes or angle brackets allowed")]
         public string Content { get; set; }
         [Required, Range(0, int.MaxValue, ErrorMessage = "May not have a negative amount of likes")]
-        public int Likes { get; set; }
+        public int Likes { get; set; } = 0;
         [Required, Range(0, int.MaxValue, ErrorMessage = "May not have a negative amount of dislikes")]
-        public int Dislikes { get; set; }
+        public int Dislikes { get; set; } = 0;
 
         public List<Comment> Comments { get; set; }
 

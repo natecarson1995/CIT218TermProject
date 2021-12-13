@@ -58,9 +58,6 @@ namespace TermProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                shortStory.Likes = 0;
-                shortStory.Dislikes = 0;
-                shortStory.ID = Guid.NewGuid().ToString();
                 _context.Add(shortStory);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

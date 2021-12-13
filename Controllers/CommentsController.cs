@@ -53,7 +53,6 @@ namespace TermProject.Controllers
         [HttpGet, Route("[controller]/[action]/{shortStoryID?}")]
         public IActionResult Create(string shortStoryID)
         {
-            ViewBag.ID = Guid.NewGuid().ToString();
             ViewBag.ShortStoryID = shortStoryID;
             return View();
         }
@@ -63,7 +62,7 @@ namespace TermProject.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, Route("[controller]/[action]/{shortStoryID}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,ShortStoryID, Content")] Comment comment)
+        public async Task<IActionResult> Create([Bind("ShortStoryID, Content")] Comment comment)
         {
             if (ModelState.IsValid)
             {
