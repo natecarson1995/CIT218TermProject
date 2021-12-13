@@ -13,13 +13,36 @@ namespace TermProject.Models
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
+        public string Author { get; set; }
+        [Required]
         [StringLength(1024, ErrorMessage = "Must enter a comment less than 1024 characters.")]
         [RegularExpression("^[^<>/\\\\]{1,1025}$", ErrorMessage ="No slashes or angle brackets allowed")]
         public string Content { get; set; }
-        [Required, Range(0, int.MaxValue, ErrorMessage = "May not have a negative amount of likes")]
-        public int Likes { get; set; } = 0;
-        [Required, Range(0, int.MaxValue, ErrorMessage = "May not have a negative amount of dislikes")]
-        public int Dislikes { get; set; } = 0;
+        [NotMapped]
+        public int Likes
+        {
+            get
+            {
+                return Reactions.Where(reaction => reaction.Reaction == Reaction.Like).Count();
+            }
+        }
+        [NotMapped]
+        public int Dislikes
+        {
+            get
+            {
+                return Reactions.Where(reaction => reaction.Reaction == Reaction.Dislike).Count();
+            }
+        }
+        [NotMapped]
+        public int Score
+        {
+            get
+            {
+                return Likes-Dislikes;
+            }
+        }
+        public List<CommentReaction> Reactions { get; set; } = new List<CommentReaction>();
 
         [Required]
         public string ShortStoryID { get; set; }

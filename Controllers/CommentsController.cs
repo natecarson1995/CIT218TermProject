@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -23,13 +24,41 @@ namespace TermProject.Controllers
         [HttpGet, Route("[controller]/[action]/{shortStoryID}")]
         public async Task<IActionResult> Index(string shortStoryID)
         {
-            ViewBag.ShortStoryID = shortStoryID;
-            return View(await _context.Comments.Where(comment=>comment.ShortStoryID==shortStoryID).ToListAsync());
+            var story = await _context.ShortStories.FirstOrDefaultAsync(story => story.ID == shortStoryID);
+            var comments = await _context.Comments.Include(comment => comment.Reactions).ToListAsync();
+            comments = comments.OrderByDescending(comment => comment.Score).ToList();
+            if (story==null)
+            {
+                var viewModel = new ShortStoryCommentViewModel
+                {
+                    Comments = comments
+                };
+                return View(viewModel);
+            }
+            else
+            {
+                var viewModel = new ShortStoryCommentViewModel
+                {
+                    ShortStoryID = shortStoryID,
+                    Comments = comments.Where(comment => comment.ShortStoryID == shortStoryID).ToList(),
+                    Reactions = await _context.ShortStoryReactions.Where(reaction => reaction.ShortStoryID == shortStoryID).ToListAsync(),
+                    StoryContent = story.Content,
+                    StoryTitle = story.Title,
+                    StoryAuthor = story.Author,
+                };
+                return View(viewModel);
+            }
         }
         // GET: Comments
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Comments.ToListAsync());
+            var comments = await _context.Comments.Include(comment => comment.Reactions).ToListAsync();
+            comments = comments.OrderByDescending(comment => comment.Score).ToList();
+            var viewModel = new ShortStoryCommentViewModel
+            {
+                Comments = comments
+            };
+            return View(viewModel);
         }
 
         // GET: Comments/Details/5
@@ -50,9 +79,13 @@ namespace TermProject.Controllers
         }
 
         // GET: Comments/Create
+        [Authorize]
         [HttpGet, Route("[controller]/[action]/{shortStoryID?}")]
-        public IActionResult Create(string shortStoryID)
+        public async Task<IActionResult> Create(string shortStoryID)
         {
+            var shortStory = await _context.ShortStories.FirstOrDefaultAsync(story => story.ID == shortStoryID);
+            ViewBag.ShortStoryTitle = shortStory.Title;
+            ViewBag.Author = User.Identity.Name;
             ViewBag.ShortStoryID = shortStoryID;
             return View();
         }
@@ -62,7 +95,8 @@ namespace TermProject.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, Route("[controller]/[action]/{shortStoryID}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ShortStoryID, Content")] Comment comment)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Author, ShortStoryID, Content")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +107,45 @@ namespace TermProject.Controllers
             return View(comment);
         }
 
+
+        [Authorize]
+        public async Task<IActionResult> React(string id, Reaction reaction)
+        {
+            var story = await _context.Comments.FirstOrDefaultAsync(story => story.ID == id);
+            if (story == null)
+            {
+                return NotFound();
+            }
+
+            var username = User.Identity.Name;
+            var pastReactions = _context.CommentReactions.Where(reaction => reaction.CommentID == id && reaction.Author == username);
+            _context.CommentReactions.RemoveRange(pastReactions);
+
+            var commentReaction = new CommentReaction
+            {
+                CommentID = id,
+                Author = username,
+                Reaction = reaction
+            };
+            story.Reactions.Add(commentReaction);
+            _context.Update(story);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+        [Authorize]
+        public async Task<IActionResult> Like(string id)
+        {
+            return await React(id, Reaction.Like);
+        }
+        [Authorize]
+        public async Task<IActionResult> Dislike(string id)
+        {
+            return await React(id, Reaction.Dislike);
+        }
+
         // GET: Comments/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -94,6 +166,7 @@ namespace TermProject.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(string id, [Bind("ID,Content,ShortStoryID")] Comment comment)
         {
             if (id != comment.ID)
@@ -125,6 +198,7 @@ namespace TermProject.Controllers
         }
 
         // GET: Comments/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -144,6 +218,7 @@ namespace TermProject.Controllers
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var comment = await _context.Comments.FindAsync(id);

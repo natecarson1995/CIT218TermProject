@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,22 @@ namespace TermProject.Controllers
         }
 
         // GET: ShortStory
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchQuery)
         {
-            return View(await _context.ShortStories.ToListAsync());
+            List<ShortStory> stories = await _context.ShortStories.Include(story => story.Reactions).ToListAsync();
+            stories = stories.OrderByDescending(story => story.Score).ToList();
+
+            if (!String.IsNullOrEmpty(searchQuery))
+            {
+                stories = stories.Where(story => story.Title.Contains(searchQuery)).ToList();
+            }
+
+            var viewModel = new ShortStoryIndexViewModel
+            {
+                SearchQuery = searchQuery,
+                Stories = stories
+            };
+            return View(viewModel);
         }
 
         // GET: ShortStory/Details/5
@@ -43,9 +57,46 @@ namespace TermProject.Controllers
             return View(shortStory);
         }
 
+        public async Task<IActionResult> React(string id, Reaction reaction)
+        {
+            var story = await _context.ShortStories.FirstOrDefaultAsync(story => story.ID == id);
+            if (story == null)
+            {
+                return NotFound();
+            }
+
+            var username = User.Identity.Name;
+            var pastReactions = _context.ShortStoryReactions.Where(reaction => reaction.ShortStoryID == id && reaction.Author == username);
+            _context.ShortStoryReactions.RemoveRange(pastReactions);
+
+            var storyReaction = new ShortStoryReaction
+            {
+                ShortStoryID = id,
+                Author = username,
+                Reaction = reaction
+            };
+            story.Reactions.Add(storyReaction);
+            _context.Update(story);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+        [Authorize]
+        public async Task<IActionResult> Like(string id)
+        {
+            return await React(id, Reaction.Like);
+        }
+        [Authorize]
+        public async Task<IActionResult> Dislike(string id)
+        {
+            return await React(id, Reaction.Dislike);
+        }
+
         // GET: ShortStory/Create
+        [Authorize]
         public IActionResult Create()
         {
+            ViewBag.Author = User.Identity.Name;
             return View();
         }
 
@@ -53,8 +104,9 @@ namespace TermProject.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Content")] ShortStory shortStory)
+        public async Task<IActionResult> Create([Bind("Title, Author, Content")] ShortStory shortStory)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +118,7 @@ namespace TermProject.Controllers
         }
 
         // GET: ShortStory/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -86,6 +139,7 @@ namespace TermProject.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(string id, [Bind("ID,Content")] ShortStory shortStory)
         {
             if (id != shortStory.ID)
@@ -117,6 +171,7 @@ namespace TermProject.Controllers
         }
 
         // GET: ShortStory/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -137,6 +192,7 @@ namespace TermProject.Controllers
         // POST: ShortStory/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var shortStory = await _context.ShortStories.FindAsync(id);

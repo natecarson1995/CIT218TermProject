@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TermProject.Data;
 
 namespace TermProject.Migrations
 {
     [DbContext(typeof(ShortStoryContext))]
-    partial class ShortStoryContextModelSnapshot : ModelSnapshot
+    [Migration("20211213184450_CommentReactions2")]
+    partial class CommentReactions2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

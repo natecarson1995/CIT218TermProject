@@ -13,14 +13,15 @@
         <form asp-action="Create" method="post">
             <div asp-validation-summary="None" class="text-danger"></div>
             <input hidden asp-for="ID" value="@ViewBag.ID" />
+            <input hidden asp-for="Author" value="@ViewBag.Author" />
             <div class="form-group">
                 <span>In response to:</span><br />
-                <span>Short Story - @ViewBag.ShortStoryID</span>
+                <span>@ViewBag.ShortStoryTitle</span>
                 <input hidden asp-for="ShortStoryID" value="@ViewBag.ShortStoryID" />
             </div>
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
-                <input asp-for="Content" class="form-control">
+                <textarea asp-for="Content" class="form-control"> </textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">

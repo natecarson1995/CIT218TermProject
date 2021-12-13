@@ -1,42 +1,34 @@
-﻿@model IEnumerable<TermProject.Models.Comment>
+﻿@model TermProject.Models.ShortStoryCommentViewModel
 
-@{
-    ViewData["Title"] = "Index";
-}
+@{ ViewData["Title"] = "Index"; }
 
-<h1>Index</h1>
-@{
-    if (ViewBag.ShortStoryID != null)
-            {
-                <a asp-controller="Comments" asp-action="Create" asp-route-shortStoryID="@ViewBag.ShortStoryID">Add Comment</a>
-            }
-}
+@{ if (Model.ShortStoryID != null)
+    {
+<h1>
+    @Html.DisplayFor(model => model.StoryTitle)
+</h1>
+                <h3 class="storyContent">
+                    @Html.DisplayFor(model => model.StoryContent)
+                </h3>
+                <em>by @Html.DisplayFor(model => model.StoryAuthor)</em>
+                <br />
+                <a asp-controller="ShortStory" asp-action="Like" asp-route-id="@Model.ShortStoryID">Like</a>
+                <a asp-controller="ShortStory" asp-action="Dislike" asp-route-id="@Model.ShortStoryID">Dislike</a>
+                <hr />
+                <a asp-controller="Comments" asp-action="Create" asp-route-shortStoryID="@Model.ShortStoryID">Add Comment</a> } }
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                In response to story ID:
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Likes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Dislikes)
-            </th>
-            <th></th>
-        </tr>
+    <th>Comments</th>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model.Comments)
+        {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ShortStoryID)
+                @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Content)
+                by @Html.DisplayFor(modelItem => item.Author)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Likes)
@@ -45,8 +37,12 @@
                 @Html.DisplayFor(modelItem => item.Dislikes)
             </td>
             <td>
+                <a asp-action="Like" asp-route-id="@item.ID">Like</a> |
+                <a asp-action="Dislike" asp-route-id="@item.ID">Dislike</a> |
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <!--
+        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+    -->
                 <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
             </td>
         </tr>

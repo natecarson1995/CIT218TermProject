@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TermProject.Data;
 
 namespace TermProject.Migrations
 {
     [DbContext(typeof(ShortStoryContext))]
-    partial class ShortStoryContextModelSnapshot : ModelSnapshot
+    [Migration("20211213172450_ChangedLikesAndDislikes")]
+    partial class ChangedLikesAndDislikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,6 +39,12 @@ namespace TermProject.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Dislikes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShortStoryID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -50,60 +58,44 @@ namespace TermProject.Migrations
                     b.HasData(
                         new
                         {
-                            ID = "c21eb9b3-76f6-4f55-855d-75be430ecaed",
+                            ID = "3ff26bad-4379-4890-a805-a92fc1b06aa1",
                             Author = "System",
                             Content = "Comment on short story #1",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(3674),
-                            ShortStoryID = "3a2ddc80-c28f-420d-90b1-f950e907f734"
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(6084),
+                            Dislikes = 0,
+                            Likes = 0,
+                            ShortStoryID = "f8e55433-64b4-4d8f-99b7-a5191797d4ab"
                         },
                         new
                         {
-                            ID = "508b05d9-1165-4ea3-aacd-d82e02798ab0",
+                            ID = "c02176ba-8851-48c3-8b16-a37457a7a188",
                             Author = "System",
                             Content = "Comment on short story #2",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(4698),
-                            ShortStoryID = "437c0cf1-ecb9-414e-8826-3161797eafee"
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(7099),
+                            Dislikes = 0,
+                            Likes = 0,
+                            ShortStoryID = "d9d5fd7f-f1f2-41c8-8ead-05d999e2a2d5"
                         },
                         new
                         {
-                            ID = "a956c7fe-ba2f-4d81-ba13-1fa29618f1d5",
+                            ID = "f317f9c3-aba4-4f81-a1f1-d5c12c7e2735",
                             Author = "System",
                             Content = "Comment on short story #3",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(4749),
-                            ShortStoryID = "0f3cd69e-cb7b-4474-8c2b-fcc61c31615b"
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(7143),
+                            Dislikes = 0,
+                            Likes = 0,
+                            ShortStoryID = "5d54ae46-6b33-4eb2-8cab-01e5201a31f9"
                         },
                         new
                         {
-                            ID = "d9ffa0d5-3035-44d1-9310-9ea6f2092ee6",
+                            ID = "70ac696b-961a-401e-9a74-0ac5d9fd8753",
                             Author = "System",
                             Content = "Comment on short story #4",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(4755),
-                            ShortStoryID = "7d422612-77c7-4a9f-84ab-cb64dee0ef59"
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(7149),
+                            Dislikes = 0,
+                            Likes = 0,
+                            ShortStoryID = "488f2e68-0c69-48e0-8e66-69dc2bc1995b"
                         });
-                });
-
-            modelBuilder.Entity("TermProject.Models.CommentReaction", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnName("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CommentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Reaction")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CommentID");
-
-                    b.ToTable("CommentReactions");
                 });
 
             modelBuilder.Entity("TermProject.Models.ShortStory", b =>
@@ -135,34 +127,34 @@ namespace TermProject.Migrations
                     b.HasData(
                         new
                         {
-                            ID = "3a2ddc80-c28f-420d-90b1-f950e907f734",
+                            ID = "f8e55433-64b4-4d8f-99b7-a5191797d4ab",
                             Author = "System",
                             Content = "Content for short story #1",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 295, DateTimeKind.Local).AddTicks(8151),
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 951, DateTimeKind.Local).AddTicks(9076),
                             Title = "Short story #1"
                         },
                         new
                         {
-                            ID = "437c0cf1-ecb9-414e-8826-3161797eafee",
+                            ID = "d9d5fd7f-f1f2-41c8-8ead-05d999e2a2d5",
                             Author = "System",
                             Content = "Content for short story #2",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(2544),
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(5122),
                             Title = "Short story #2"
                         },
                         new
                         {
-                            ID = "0f3cd69e-cb7b-4474-8c2b-fcc61c31615b",
+                            ID = "5d54ae46-6b33-4eb2-8cab-01e5201a31f9",
                             Author = "System",
                             Content = "Content for short story #3",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(2591),
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(5170),
                             Title = "Short story #3"
                         },
                         new
                         {
-                            ID = "7d422612-77c7-4a9f-84ab-cb64dee0ef59",
+                            ID = "488f2e68-0c69-48e0-8e66-69dc2bc1995b",
                             Author = "System",
                             Content = "Content for short story #4",
-                            CreatedAt = new DateTime(2021, 12, 13, 13, 44, 50, 298, DateTimeKind.Local).AddTicks(2599),
+                            CreatedAt = new DateTime(2021, 12, 13, 12, 24, 49, 954, DateTimeKind.Local).AddTicks(5177),
                             Title = "Short story #4"
                         });
                 });
@@ -172,10 +164,6 @@ namespace TermProject.Migrations
                     b.Property<string>("ID")
                         .HasColumnName("ID")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Reaction")
                         .HasColumnType("int");
@@ -188,7 +176,7 @@ namespace TermProject.Migrations
 
                     b.HasIndex("ShortStoryID");
 
-                    b.ToTable("ShortStoryReactions");
+                    b.ToTable("ShortStoryReaction");
                 });
 
             modelBuilder.Entity("TermProject.Models.Comment", b =>
@@ -196,15 +184,6 @@ namespace TermProject.Migrations
                     b.HasOne("TermProject.Models.ShortStory", null)
                         .WithMany("Comments")
                         .HasForeignKey("ShortStoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TermProject.Models.CommentReaction", b =>
-                {
-                    b.HasOne("TermProject.Models.Comment", "Comment")
-                        .WithMany("Reactions")
-                        .HasForeignKey("CommentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
